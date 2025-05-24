@@ -4,14 +4,17 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/AuthRoutes');
 const nodemailer = require("nodemailer");
+const stripe = require('stripe');
+const bodyParser = require('body-parser');
 
-
+const stripeKey = process.env.STRIPE_SECRET_KEY;
 dotenv.config();
 const app = express();
 connectDB();
 
 // Middleware
 app.use(express.json());
+app.use(bodyParser.json());
 app.use(cors()); 
 
 app.use(cors({
