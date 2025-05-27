@@ -7,32 +7,34 @@ const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const { isAuthenticated, user, logout } = useAuth();
-  
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
-  
+
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Routes', path: '/routes' },
     { name: 'Schedules', path: '/schedules' },
     { name: 'My Bookings', path: '/bookings' },
   ];
-  
+
   return (
     <header className="bg-white shadow-sm">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center">
-            <Bus className="h-8 w-8 text-primary" />
-            <span className="ml-2 text-xl font-bold text-gray-900">
-              <span className="text-primary">Mat</span>Connect
-            </span>
-          </Link>
-          
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+        <div className="flex items-center justify-between h-16 w-full">
+          {/* Logo - Far Left */}
+          <div className="flex items-center">
+            <Link to="/" className="flex items-center">
+              <Bus className="h-8 w-8 text-primary" />
+              <span className="ml-2 text-xl font-bold text-gray-900">
+                <span className="text-primary">Mat</span>Connect
+              </span>
+            </Link>
+          </div>
+
+          {/* Nav Links - Middle */}
+          <nav className="hidden md:flex items-center space-x-8 ml-8">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
@@ -45,9 +47,9 @@ const Navbar: React.FC = () => {
               </Link>
             ))}
           </nav>
-          
-          {/* User Menu - Desktop */}
-          <div className="hidden md:flex items-center space-x-6">
+
+          {/* User/Login - Far Right */}
+          <div className="hidden md:flex items-center space-x-6 ml-auto">
             {isAuthenticated ? (
               <div className="relative group">
                 <button className="flex items-center text-sm font-medium text-gray-700 hover:text-primary">
@@ -89,9 +91,9 @@ const Navbar: React.FC = () => {
               </>
             )}
           </div>
-          
+
           {/* Mobile Menu Button */}
-          <div className="md:hidden">
+          <div className="md:hidden ml-auto">
             <button
               type="button"
               className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-primary hover:bg-gray-50 focus:outline-none"
@@ -106,7 +108,7 @@ const Navbar: React.FC = () => {
           </div>
         </div>
       </div>
-      
+
       {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="md:hidden">
