@@ -17,7 +17,7 @@ const AddRoute = () => {
 
   const [uploading, setUploading] = useState(false);
 
-  const BACKEND_BASE_URL = 'http://localhost:4000/api/createRoutes'; // Update if needed
+  const BACKEND_BASE_URL = 'http://localhost:4000/api/createDailyRoutes'; // Update if needed
 
   useEffect(() => {
     if (id) {
@@ -75,7 +75,7 @@ const AddRoute = () => {
         body: JSON.stringify(form),
       });
 
-      navigate('/AdminRoutes');
+      navigate('/dailyRoutes');
     } catch (err) {
       console.error('Failed to save route', err);
     }
@@ -148,7 +148,7 @@ const AddRoute = () => {
         <button type="submit" className="btn btn-success">
           {id ? 'Update' : 'Add'} Route
         </button>
-        <Link to="/AdminRoutes" className="btn btn-secondary ms-2">
+        <Link to="/AddDailyRoute/new" className="btn btn-secondary ms-2">
           Cancel
         </Link>
       </form>

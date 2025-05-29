@@ -9,8 +9,6 @@ import AuthLayout from './layouts/AuthLayout';
 // Pages
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
-// import RoutesList from './pages/routes/RoutesList';
-// import RouteForm from './pages/routes/RouteForm';
 import NotFound from './pages/NotFound';
 import Register from './pages/Register';
 
@@ -27,11 +25,17 @@ import AddVehicle from './pages/Adds/AddVehicle';
 // routes
 import AdminRoutes from './pages/admin/AdminRoutes';
 import AddRoute from './pages/Adds/AddRoute';
+import DailyRoutes from './pages/admin/dailyRoutes';
+import AddDailyRoute from './pages/Adds/AddDailyRoutes';
 // schedules
 // import RouteSchedules from './pages/RouteSchedules';
 import ViewSchedules from './pages/admin/ViewSchedules';
 import AddSchedule from './pages/Adds/AddSchedule';
+import AddDailyDepartures from './pages/Adds/AddDailyDepartures';
+import DailyDepartures from './pages/admin/DailyDepartures';
 import EditSchedule from './pages/Adds/EditSchedule';
+
+
 // Users
 import AdminUsers from './pages/admin/AdminUsers';
 
@@ -90,12 +94,16 @@ function App() {
         {/* routes */}
         <Route path="/AdminRoutes" element={<AdminRoutes />} />
         <Route path="/AdminRoutes/new" element={<AddRoute />} />
+        <Route path="/dailyRoutes" element={<DailyRoutes />} />
+        <Route path="/AddDailyRoute/new" element={<AddDailyRoute />} />
         <Route path="/routes/:id/edit" element={<AddRoute />} />
         
         {/* schedules */}
         {/* <Route path="/routes/:id/schedules" element={<RouteSchedules />} /> */}
         <Route path="/schedules" element={<ViewSchedules />} />
+        <Route path="/dailyDepartures" element={<DailyDepartures />} />
         <Route path="/createSchedule" element={<AddSchedule />} />
+        <Route path="/createDailyDepartures" element={<AddDailyDepartures />} />
         <Route path="/schedules/edit/:id" element={<EditSchedule />} />
         {/* users */}
         <Route path="/users" element={<AdminUsers />} />

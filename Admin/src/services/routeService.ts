@@ -1,50 +1,62 @@
 import axios from 'axios';
 
-export interface Route {
+// Updated interface for Transport Route
+export interface TransportRoute {
   _id: string;
-  name: string;
-  path: string;
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  routeNumber: string;
+  origin: string;
+  destination: string;
   description?: string;
-  active: boolean;
+  imageUrl?: string;
+  distance?: string;
+  duration?: string;
   createdAt?: string;
   updatedAt?: string;
 }
 
-export interface RouteFormData {
-  name: string;
-  path: string;
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+// Form data interface for creating/updating a route
+export interface TransportRouteFormData {
+  routeNumber: string;
+  origin: string;
+  destination: string;
   description?: string;
-  active: boolean;
+  imageUrl?: string;
+  distance?: string;
+  duration?: string;
 }
 
-const API_BASE = '/api/routes';
+const API_BASE = 'http://localhost:4000/api';
 
-const getRoute = async (id: string): Promise<Route> => {
-  const response = await axios.get(`http://localhost:4000/api/getRoutes/${id}`);
+// Get a single route by ID
+const getRoute = async (id: string): Promise<TransportRoute> => {
+  const response = await axios.get(`${API_BASE}/getRoutes/${id}`);
   return response.data;
 };
 
-const getAllRoutes = async (): Promise<Route[]> => {
-  const response = await axios.get('http://localhost:4000/api/getRoutes');
+// Get all routes
+const getAllRoutes = async (): Promise<TransportRoute[]> => {
+  const response = await axios.get(`${API_BASE}/getRoutes`);
   return response.data;
 };
 
-const createRoute = async (data: RouteFormData): Promise<Route> => {
-  const response = await axios.post(API_BASE, data);
+// Create a new route
+const createRoute = async (data: TransportRouteFormData): Promise<TransportRoute> => {
+  const response = await axios.post(`${API_BASE}/createRoutes`, data);
   return response.data;
 };
 
-const updateRoute = async (id: string, data: RouteFormData): Promise<Route> => {
-  const response = await axios.put(`http://localhost:4000/api/update/${id}`, data);
+// Update a route by ID
+const updateRoute = async (id: string, data: TransportRouteFormData): Promise<TransportRoute> => {
+  const response = await axios.put(`${API_BASE}/update/${id}`, data);
   return response.data;
 };
 
+// Delete a route by ID
 const deleteRoute = async (id: string): Promise<void> => {
-  await axios.delete(`http://localhost:4000/api/delete/${id}`);
+  await axios.delete(`${API_BASE}/delete/${id}`);
 };
 
+// Exporting the service object
 const routeService = {
   getRoute,
   getAllRoutes,

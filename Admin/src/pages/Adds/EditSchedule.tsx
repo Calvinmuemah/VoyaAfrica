@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
-import { getScheduleById, updateSchedule } from '../../services/scheduleService';
+import { getScheduleById, updateSchedule } from '../../styles/scheduleService';
 import { getVehicles } from '../../services/vehicleService';
-import getRoutes from '../../services/routeService';
+import routeService from '../../services/routeService';
 import { getDrivers } from '../../services/driverService';
 
 const EditSchedule: React.FC = () => {
@@ -27,7 +27,7 @@ const EditSchedule: React.FC = () => {
     const fetchData = async () => {
       const [schedule, routesData, vehiclesData, driversData] = await Promise.all([
         getScheduleById(id!),
-        getRoutes(),
+        routeService.getAllRoutes(),
         getVehicles(),
         getDrivers()
       ]);

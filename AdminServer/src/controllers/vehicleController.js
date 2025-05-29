@@ -2,12 +2,11 @@ import Vehicle from '../models/Vehicle.js';
 
 export const createVehicle = async (req, res) => {
   try {
-    console.log("Incoming vehicle payload:", req.body); // 👈
-
+    console.log("Received payload:", req.body); // ADD THIS
     const vehicle = await Vehicle.create(req.body);
     res.status(201).json(vehicle);
   } catch (err) {
-    console.error("Vehicle creation failed:", err.message); // 👈
+    console.error("Vehicle creation failed:", err.message); // ADD THIS
     res.status(400).json({ error: err.message });
   }
 };
@@ -46,5 +45,15 @@ export const deleteVehicle = async (req, res) => {
     res.json({ message: 'Vehicle deleted' });
   } catch (err) {
     res.status(400).json({ error: err.message });
+  }
+};
+// VehicleCount
+export const getVehiclesCount = async (req, res) => {
+  try {
+    const count = await Vehicle.countDocuments();
+    res.json({ count });
+  } catch (err) {
+    console.error('Failed to count Vehicles', err);
+    res.status(500).json({ error: 'Failed to count Vehicles' });
   }
 };

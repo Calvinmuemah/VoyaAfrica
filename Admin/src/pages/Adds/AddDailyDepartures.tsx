@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { createSchedule } from '../../styles/scheduleService';
+import { createSchedule } from '../../services/DailyDepartures';
 import { getDrivers } from '../../services/driverService';
 import { getVehicles } from '../../services/vehicleService';
 import routeService from '../../services/routeService';
@@ -10,12 +10,12 @@ interface Driver {
 }
 
 interface Vehicle {
-  _id: string;
+  id: string;
   vehicleNumber: string;
 }
 
 interface Route {
-  _id: string;
+  id: string;
   routeNumber: string;
 }
 
@@ -108,7 +108,7 @@ const AddSchedule = () => {
           >
             <option value="">Select</option>
             {vehicles.map((v) => (
-              <option key={v._id} value={v._id}>
+              <option key={v.id} value={v.id}>
                 {v.vehicleNumber}
               </option>
             ))}
@@ -126,7 +126,7 @@ const AddSchedule = () => {
           >
             <option value="">Select</option>
             {routes.map((r) => (
-              <option key={r._id} value={r._id}>
+              <option key={r.id} value={r.id}>
                 {r.routeNumber}
               </option>
             ))}

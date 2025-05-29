@@ -12,7 +12,10 @@ import ConfirmationPage from './pages/ConfirmationPage';
 import BookingsPage from './pages/BookingsPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-
+import AboutPage from './pages/AboutPage';
+import ContactPage from './pages/ContactPage';
+// get/fetches
+import GetRoutes from './pages/routes/getRoutes';
 function App() {
   return (
     <Router>
@@ -28,6 +31,10 @@ function App() {
             <Route path="/bookings" element={<BookingsPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            {/* gets/Fetches */}
+            <Route path="/routes" element={<GetRoutes />} />
           </Routes>
         </BookingProvider>
       </AuthProvider>

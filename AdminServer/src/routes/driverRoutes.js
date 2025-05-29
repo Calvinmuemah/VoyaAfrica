@@ -39,5 +39,14 @@ router.delete('/delete/:id', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-
+//DriversCount
+router.get('/driversCount', async (req, res) => {
+  try {
+    const count = await Driver.countDocuments();
+    res.json({ count });
+  } catch (err) {
+    console.error('Failed to count Drivers', err);
+    res.status(500).json({ error: 'Failed to count Drivers' });
+  }
+});
 export default router;

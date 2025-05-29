@@ -16,7 +16,9 @@ import driverRoutes from './src/routes/driverRoutes.js';
 import vehicleRoutes from './src/routes/vehicleRoutes.js';
 import uploadRoutes from './src/routes/uploadRoutes.js';
 import routeRoutes from './src/routes/routeRoutes.js';
+import dailyRoutes  from './src/routes/dailyRoutes.js';
 import scheduleRoutes  from './src/routes/scheduleRoutes.js';
+import DailyDepartureRoutes  from './src/routes/dailyDepartures.js';
 import usersRoutes  from './src/routes/userRoutes.js';
 
 
@@ -52,7 +54,9 @@ app.use('/api', driverRoutes);
 app.use('/api', vehicleRoutes);
 app.use('/api/uploads', uploadRoutes);
 app.use('/api', routeRoutes);
+app.use('/api', dailyRoutes);
 app.use('/api', scheduleRoutes);
+app.use('/api', DailyDepartureRoutes);
 app.use('/api', usersRoutes);
 // app.use('/api/routes', authenticateToken, routesRoutes);
 

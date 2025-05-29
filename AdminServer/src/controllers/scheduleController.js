@@ -64,3 +64,14 @@ export const deleteSchedule = async (req, res) => {
     res.status(500).json({ error: 'Failed to delete schedule', details: err.message });
   }
 };
+
+// SchedulesCount
+export const getSchedulesCount = async (req, res) => {
+  try {
+    const count = await Schedule.countDocuments();
+    res.json({ count });
+  } catch (err) {
+    console.error('Failed to count Schedules:', err);
+    res.status(500).json({ error: 'Failed to count Schedules' });
+  }
+};

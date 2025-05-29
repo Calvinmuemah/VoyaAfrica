@@ -1,9 +1,53 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
-import { featuredRoutes } from '../../data/mockData';
+
+// Define Route type consistent with your backend data
+interface Route {
+  id: string;
+  from: string;
+  to: string;
+  distance?: string;
+  duration?: string;
+  price?: string;       // Optional, if backend provides
+  image?: string;       // Optional, if backend provides
+}
+
+const API_BASE = 'http://localhost:4000/api';  // Change to your backend URL
 
 const FeaturedRoutes: React.FC = () => {
+  const [routes, setRoutes] = useState<Route[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchRoutes = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/getDailyRoutes`);
+        if (!res.ok) throw new Error(`Error: ${res.status} ${res.statusText}`);
+        const data: Route[] = await res.json();
+
+        // Optional: Add default images or prices if missing
+        const enrichedData = data.map(route => ({
+          ...route,
+          image: route.image || '/default-route.jpg',
+          price: route.price || 'KES 1500',
+        }));
+
+        setRoutes(enrichedData);
+      } catch (err: any) {
+        setError(err.message || 'Failed to fetch routes');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRoutes();
+  }, []);
+
+  if (loading) return <p className="text-center py-10">Loading routes...</p>;
+  if (error) return <p className="text-center py-10 text-red-600">{error}</p>;
+
   return (
     <section className="py-12 md:py-16 bg-gray-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -13,9 +57,9 @@ const FeaturedRoutes: React.FC = () => {
             Discover our most traveled routes with frequent departures and competitive prices
           </p>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {featuredRoutes.map((route) => (
+          {routes.map((route) => (
             <div
               key={route.id}
               className="card group overflow-hidden transition-all duration-300 hover:shadow-lg"
@@ -49,7 +93,7 @@ const FeaturedRoutes: React.FC = () => {
             </div>
           ))}
         </div>
-        
+
         <div className="text-center mt-10">
           <Link
             to="/routes"

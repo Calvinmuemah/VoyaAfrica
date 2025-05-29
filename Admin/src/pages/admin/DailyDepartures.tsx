@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { getSchedules, deleteSchedule } from '../../styles/scheduleService';
+import { getSchedules, deleteSchedule } from '../../services/DailyDepartures';
 import { Link } from 'react-router-dom';
 import { Pencil, Trash2, Plus } from 'lucide-react';
 
-const ViewSchedules: React.FC = () => {
+const DailyDepartures: React.FC = () => {
   const [schedules, setSchedules] = useState([]);
 
   const fetchSchedules = async () => {
@@ -30,8 +30,8 @@ const ViewSchedules: React.FC = () => {
     <div className="container mt-4">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h2>Schedules</h2>
-        <Link to="/createSchedule" className="btn btn-primary">
-          <Plus size={18} className="me-1" /> Add Schedule
+        <Link to="/createDailyDepartures" className="btn btn-primary">
+          <Plus size={18} className="me-1" /> Add DailyDepartures
         </Link>
       </div>
       <div className="row">
@@ -64,4 +64,4 @@ const ViewSchedules: React.FC = () => {
   );
 };
 
-export default ViewSchedules;
+export default DailyDepartures;

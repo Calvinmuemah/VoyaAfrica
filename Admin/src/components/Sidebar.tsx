@@ -89,7 +89,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
                 Routes
               </NavLink>
             </li>
-
+            <li className="nav-item">
+              <NavLink to="/dailyRoutes" className={navLinkClass}>
+                <Route size={18} className="me-2" />
+                DailyRoutes
+              </NavLink>
+            </li>
             <li className="nav-item">
               <NavLink to="/users" className={navLinkClass}>
                 <Users size={18} className="me-2" />
@@ -115,6 +120,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
               <NavLink to="/schedules" className={navLinkClass}>
                 <Calendar size={18} className="me-2" />
                 Schedules
+              </NavLink>
+            </li>
+            <li className="nav-item">
+              <NavLink to="/dailyDepartures" className={navLinkClass}>
+                <Calendar size={18} className="me-2" />
+                DailyDepartures
               </NavLink>
             </li>
 

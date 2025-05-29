@@ -21,12 +21,12 @@ const API_BASE = 'http://localhost:4000/api';
 
 // Route service functions
 const getAllRoutes = async (): Promise<TransportRoute[]> => {
-  const response = await axios.get(`${API_BASE}/getRoutes`);
+  const response = await axios.get(`${API_BASE}/getDailyRoutes`);
   return response.data;
 };
 
-const deleteRoute = async (routeNumber: string): Promise<void> => {
-  await axios.delete(`${API_BASE}/delete/${routeNumber}`);
+const deleteRoute = async (id: string): Promise<void> => {
+  await axios.delete(`${API_BASE}/updateDailyRoute/${id}`);
 };
 
 // Main component
@@ -60,7 +60,7 @@ const AdminRoutes = () => {
   return (
     <div>
       <h3>All Transport Routes</h3>
-      <Link to="/AdminRoutes/new" className="btn btn-primary mb-3">
+      <Link to="/AddDailyRoute/new" className="btn btn-primary mb-3">
         Add Route
       </Link>
       <div className="row">
@@ -88,7 +88,7 @@ const AdminRoutes = () => {
                     </>
                   )}
                 </p>
-                <Link to="/schedules" className="btn btn-info btn-sm me-2">
+                <Link to="/dailyDepartures" className="btn btn-info btn-sm me-2">
                   View Schedules
                 </Link>
                 <Link to={`/AdminRoutes/${route._id}`} className="btn btn-secondary btn-sm me-2">

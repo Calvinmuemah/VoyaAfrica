@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const routeSchema = new mongoose.Schema({
+const DailyRoutesSchema = new mongoose.Schema({
   routeNumber: { type: String, required: true, unique: true },
   origin: { type: String, required: true },
   destination: { type: String, required: true },
@@ -10,5 +10,5 @@ const routeSchema = new mongoose.Schema({
   duration: { type: String, required: true }, 
 }, { timestamps: true });
 
-const Route = mongoose.model('Route', routeSchema);
-export default Route;
+const DailyRoutes = mongoose.model('DailyRoutes', DailyRoutesSchema);
+export default DailyRoutes;

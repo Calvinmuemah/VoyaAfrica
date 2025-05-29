@@ -1,22 +1,22 @@
 import express from 'express';
 import {
-  getRoutes,
+  getDailyRoutes,
   getRoute,
-  createRoute,
-  updateRoute,
-  deleteRoute,
-  getRoutesCount,
-} from '../controllers/routeController.js';
+  createDailyRoutes,
+  updateDailyRoute,
+//   deleteDailyRoutes,
+  getDailyRoutesCount,
+} from '../controllers/dailyRoutes.js';
 
 const router = express.Router();
 
-router.get('/getRoutes', getRoutes);
-router.get('/getRoutes/:id', getRoute);
-router.post('/createRoutes', createRoute);
-router.put('/update/:id', updateRoute);
-router.get('/routes/count', getRoutesCount);
+router.get('/getDailyRoutes', getDailyRoutes);
+router.get('/getDailyRoute/:id', getRoute);
+router.post('/createDailyRoutes', createDailyRoutes);
+router.put('/updateDailyRoute/:id', updateDailyRoute);
+router.get('/getDailyRoutesCount/count', getDailyRoutesCount);
 
-// router.delete('/delete/:routeNumber', deleteRoute);
+// router.delete('/delete/:routeNumber', deleteDailyRoutes);
 router.delete('/delete/:routeNumber', async (req, res) => {
   try {
     const { routeNumber } = req.params;

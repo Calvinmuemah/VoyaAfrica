@@ -24,14 +24,17 @@ export const getRoute = async (req, res) => {
 // CREATE a new route
 export const createRoute = async (req, res) => {
   try {
-    const { routeNumber, origin, destination, description, imageUrl } = req.body;
-
+    const { routeNumber, origin, destination, description, imageUrl, distance,
+      duration } = req.body;
+    console.log('Received route data:', req.body);
     const newRoute = new Route({
       routeNumber,
       origin,
       destination,
       description,
       imageUrl,
+      distance,
+      duration
     });
 
     const savedRoute = await newRoute.save();
@@ -66,6 +69,17 @@ export const deleteRoute = async (req, res) => {
   } catch (err) {
     console.error('Error deleting route:', err);
     res.status(500).json({ error: 'Failed to delete route' });
+  }
+};
+
+// Count all routes
+export const getRoutesCount = async (req, res) => {
+  try {
+    const count = await Route.countDocuments();
+    res.json({ count });
+  } catch (err) {
+    console.error('Failed to count routes:', err);
+    res.status(500).json({ error: 'Failed to count routes' });
   }
 };
 

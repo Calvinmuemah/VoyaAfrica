@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createVehicle, getVehicle, updateVehicle } from '../../services/vehicleService';
+import routeService from '../../services/routeService';
 
 const AddVehicle = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+
+  const [routes, setRoutes] = useState([]); // <-- for dropdown
   const [form, setForm] = useState({
-    registrationNumber: '',
+    vehicleNumber: '',
     route: '',
-    numberOfSeats: '', // string for input compatibility
+    numberOfSeats: '',
     model: '',
     status: 'active',
   });
@@ -19,9 +22,14 @@ const AddVehicle = () => {
         const v = await getVehicle(id);
         setForm({
           ...v,
-          numberOfSeats: v.numberOfSeats.toString(), // convert number to string for input
+          numberOfSeats: v.numberOfSeats.toString(),
         });
       }
+
+      // Load available routes
+      const fetchedRoutes = await routeService.getAllRoutes();
+
+      setRoutes(fetchedRoutes);
     };
     load();
   }, [id]);
@@ -62,21 +70,30 @@ const AddVehicle = () => {
       <h3>{id ? 'Edit' : 'Add'} Vehicle</h3>
       <form onSubmit={handleSubmit}>
         <input
-          name="registrationNumber"
-          value={form.registrationNumber}
+          name="vehicleNumber"
+          value={form.vehicleNumber}
           onChange={handleChange}
-          placeholder="Registration Number"
+          placeholder="Vehicle Number"
           className="form-control mb-2"
           required
         />
-        <input
+
+        {/* Route dropdown */}
+        <select
           name="route"
           value={form.route}
           onChange={handleChange}
-          placeholder="Route"
           className="form-control mb-2"
           required
-        />
+        >
+          <option value="">Select Route</option>
+          {routes.map((route: any) => (
+            <option key={route._id} value={route._id}>
+              {route.routeNumber} - {route.startLocation} to {route.endLocation}
+            </option>
+          ))}
+        </select>
+
         <input
           type="number"
           name="numberOfSeats"

@@ -26,11 +26,11 @@ const Dashboard: React.FC = () => {
         setLoading(true);
         const [routesRes, usersRes, vehiclesRes, driversRes, schedulesRes] =
           await Promise.all([
-            fetch('/api/routes/count'),
-            fetch('/api/users/count'),
-            fetch('/api/vehicles/count'),
-            fetch('/api/drivers/count'),
-            fetch('/api/schedules/count'),
+            fetch('http://localhost:4000/api/routes/count'),
+            fetch('http://localhost:4000/api/users/count'),
+            fetch('http://localhost:4000/api/vehicle/count'),
+            fetch('http://localhost:4000/api/driversCount'),
+            fetch('http://localhost:4000/api/schedule/count'),
           ]);
         if (
           !routesRes.ok ||
