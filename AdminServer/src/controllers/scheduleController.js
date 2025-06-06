@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Schedule from '../models/Schedule.js';
 
 // Create a new schedule
@@ -65,6 +66,45 @@ export const deleteSchedule = async (req, res) => {
   }
 };
 
+export const getSchedulesByRoute = async (req, res) => {
+  try {
+    const { routeId, date } = req.query;
+    console.log('Query received:', { routeId, date });
+
+    const query = {};
+
+    if (routeId && mongoose.Types.ObjectId.isValid(routeId)) {
+      query.route = new mongoose.Types.ObjectId(routeId);
+    } else {
+      console.log('Invalid or missing routeId');
+      return res.status(400).json({ error: 'Invalid or missing routeId' });
+    }
+
+    if (date) {
+      const start = new Date(date);
+      const end = new Date(date);
+      end.setDate(end.getDate() + 1);
+      query.departureTime = { $gte: start, $lt: end };
+    }
+
+    console.log('MongoDB Query:', query);
+
+    const schedules = await Schedule.find(query)
+      .populate('route')
+      .populate('vehicle')
+      .populate('driver');
+
+    console.log('Schedules found:', schedules.length);
+    res.status(200).json(schedules);
+  } catch (error) {
+    console.error('Error fetching schedules:', error.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+  
+
+
 // SchedulesCount
 export const getSchedulesCount = async (req, res) => {
   try {
@@ -75,3 +115,5 @@ export const getSchedulesCount = async (req, res) => {
     res.status(500).json({ error: 'Failed to count Schedules' });
   }
 };
+
+

@@ -26,8 +26,8 @@ const AddSchedule = () => {
     route: '',
     departureTime: '',
     arrivalTime: '',
-    availableSeats: 0,
-    price: 0,
+    availableSeats: '',
+    price: '',
   });
 
   const [drivers, setDrivers] = useState<Driver[]>([]);
@@ -66,8 +66,8 @@ const AddSchedule = () => {
         route: '',
         departureTime: '',
         arrivalTime: '',
-        availableSeats: 0,
-        price: 0,
+        availableSeats: '',
+        price: '',
       });
     } catch (error) {
       console.error('Failed to create schedule:', error);
@@ -178,6 +178,7 @@ const AddSchedule = () => {
             className="form-control"
             value={form.price}
             onChange={handleChange}
+            placeholder="price (e.g., 1500)"
             min={0}
             step="0.01"
             required

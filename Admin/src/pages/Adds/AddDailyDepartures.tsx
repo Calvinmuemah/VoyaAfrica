@@ -178,6 +178,7 @@ const AddSchedule = () => {
             className="form-control"
             value={form.price}
             onChange={handleChange}
+            placeholder='price eg. ksh1500'
             min={0}
             step="0.01"
             required

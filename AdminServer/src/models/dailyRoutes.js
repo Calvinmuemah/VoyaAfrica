@@ -7,7 +7,8 @@ const DailyRoutesSchema = new mongoose.Schema({
   description: { type: String },
   imageUrl: { type: String },
   distance: { type: String, required: true }, 
-  duration: { type: String, required: true }, 
+  duration: { type: String, required: true },
+  price: { type: Number, required: true },
 }, { timestamps: true });
 
 const DailyRoutes = mongoose.model('DailyRoutes', DailyRoutesSchema);

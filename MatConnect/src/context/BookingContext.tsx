@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { Route, Schedule, Seat, Passenger } from '../types';
 
+// Step 1: Add setSelectedSeats to the context type
 interface BookingContextType {
   selectedRoute: Route | null;
   selectedSchedule: Schedule | null;
@@ -10,6 +11,7 @@ interface BookingContextType {
   currentStep: number;
   setSelectedRoute: (route: Route | null) => void;
   setSelectedSchedule: (schedule: Schedule | null) => void;
+  setSelectedSeats: (seats: Seat[]) => void;
   addSeat: (seat: Seat) => void;
   removeSeat: (seatId: number) => void;
   setPassengers: (passengers: Passenger[]) => void;
@@ -61,7 +63,6 @@ export const BookingProvider: React.FC<{ children: ReactNode }> = ({ children })
 
   const totalAmount = selectedSeats.reduce((total, seat) => total + seat.price, 0);
 
-  // New: Call backend to create booking
   const createBooking = async (userId: string) => {
     if (!selectedRoute || !selectedSchedule) {
       throw new Error('Route and Schedule must be selected');
@@ -97,6 +98,7 @@ export const BookingProvider: React.FC<{ children: ReactNode }> = ({ children })
     }
   };
 
+  // Step 2: Include setSelectedSeats in the value passed to the context
   const value: BookingContextType = {
     selectedRoute,
     selectedSchedule,
@@ -106,6 +108,7 @@ export const BookingProvider: React.FC<{ children: ReactNode }> = ({ children })
     currentStep,
     setSelectedRoute,
     setSelectedSchedule,
+    setSelectedSeats,
     addSeat,
     removeSeat,
     setPassengers,
@@ -113,7 +116,7 @@ export const BookingProvider: React.FC<{ children: ReactNode }> = ({ children })
     nextStep,
     prevStep,
     setStep,
-    createBooking, // Added here
+    createBooking,
   };
 
   return <BookingContext.Provider value={value}>{children}</BookingContext.Provider>;

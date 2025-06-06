@@ -5,6 +5,7 @@ import {
   getScheduleById,
   updateSchedule,
   deleteSchedule,
+  getSchedulesByRoute,
   getSchedulesCount
 } from '../controllers/scheduleController.js';
 
@@ -15,6 +16,7 @@ router.get('/getSchedules', getSchedules);
 router.get('/getSchedules/:id', getScheduleById);
 router.put('/update/:id', updateSchedule);
 router.delete('/delete/:id', deleteSchedule);
+router.get('/getSchedulesByRoute', getSchedulesByRoute);
 router.get('/schedule/count', getSchedulesCount);
 
 // ✅ Use default export

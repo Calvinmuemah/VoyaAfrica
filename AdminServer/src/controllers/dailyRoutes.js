@@ -32,8 +32,8 @@ export const getRoute = async (req, res) => {
 export const createDailyRoutes = async (req, res) => {
   try {
     const { routeNumber, origin, destination, description, imageUrl, distance,
-      duration } = req.body;
-    // console.log('Received DailyRoutes data:', req.body);
+      duration, price } = req.body;
+    console.log('Received DailyRoutes data:', req.body);
     const newDailyRoute = new DailyRoutes({
       routeNumber,
       origin,
@@ -41,7 +41,8 @@ export const createDailyRoutes = async (req, res) => {
       description,
       imageUrl,
       distance,
-      duration
+      duration,
+      price
     });
 
     const savedDailyRoute = await newDailyRoute.save();

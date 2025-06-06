@@ -13,6 +13,7 @@ const AddRoute = () => {
     imageUrl: '',
     distance: '',
     duration: '',
+    price: '',
   });
 
   const [uploading, setUploading] = useState(false);
@@ -133,6 +134,20 @@ const AddRoute = () => {
           className="form-control mb-2"
           rows={3}
         />
+          <div className="mb-2">
+          <label>Price</label>
+          <input
+            type="number"
+            name="price"
+            className="form-control"
+            value={form.price}
+            onChange={handleChange}
+            placeholder="Price (e.g., 1500)"
+            min={0}
+            step="0.01"
+            required
+          />
+        </div>
         <div className="mb-2">
           <label htmlFor="image">Route Image</label>
           <input type="file" id="image" onChange={handleImageChange} className="form-control" />

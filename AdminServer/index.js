@@ -20,6 +20,8 @@ import dailyRoutes  from './src/routes/dailyRoutes.js';
 import scheduleRoutes  from './src/routes/scheduleRoutes.js';
 import DailyDepartureRoutes  from './src/routes/dailyDepartures.js';
 import usersRoutes  from './src/routes/userRoutes.js';
+import callbackRoute from "./src/routes/callback.js";
+import mpesa from "./src/routes/mpesa.js";
 
 
 // Middleware
@@ -58,6 +60,9 @@ app.use('/api', dailyRoutes);
 app.use('/api', scheduleRoutes);
 app.use('/api', DailyDepartureRoutes);
 app.use('/api', usersRoutes);
+// mpesa
+app.use("/api", mpesa);
+app.use("/api", callbackRoute);
 // app.use('/api/routes', authenticateToken, routesRoutes);
 
 // Health check route

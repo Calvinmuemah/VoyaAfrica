@@ -12,13 +12,18 @@ interface ScheduleListProps {
 const ScheduleList: React.FC<ScheduleListProps> = ({ schedules, date }) => {
   const navigate = useNavigate();
   const { setSelectedSchedule } = useBooking();
-  
+
   const handleScheduleSelect = (schedule: Schedule) => {
+    if (!schedule.id) {
+      console.error("❌ Missing schedule ID!");
+      return;
+    }
+
     setSelectedSchedule(schedule);
     navigate(`/booking/seats?scheduleId=${schedule.id}`);
   };
-  
-  if (schedules.length === 0) {
+
+  if (!schedules || schedules.length === 0) {
     return (
       <div className="text-center py-12">
         <div className="flex justify-center mb-4">
@@ -33,13 +38,13 @@ const ScheduleList: React.FC<ScheduleListProps> = ({ schedules, date }) => {
       </div>
     );
   }
-  
+
   return (
     <div className="space-y-4">
       {schedules.map((schedule) => (
         <div
           key={schedule.id}
-          className="card p-4 hover:shadow-md transition-shadow duration-200"
+          className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-shadow duration-200"
         >
           <div className="flex flex-col md:flex-row md:items-center">
             <div className="flex-1">
@@ -48,30 +53,42 @@ const ScheduleList: React.FC<ScheduleListProps> = ({ schedules, date }) => {
                   <Bus className="h-4 w-4 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-medium text-gray-900">{schedule.companyName}</h3>
-                  <p className="text-sm text-gray-500">{schedule.vehicleType}</p>
+                  {/* <h3 className="font-medium text-gray-900">{schedule.companyName}</h3> */}
+                  <p className="text-sm text-gray-500">
+                    {schedule.vehicleId?.model || 'Unknown model'}
+                  </p>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 <div className="flex items-start">
                   <Clock className="h-5 w-5 text-gray-400 mr-2 mt-0.5" />
                   <div>
                     <p className="text-sm text-gray-500">Departure</p>
-                    <p className="font-medium text-gray-900">{schedule.departureTime}</p>
+                    <p className="font-medium text-gray-900">
+                      {new Date(schedule.departureTime).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </p>
                     <p className="text-sm text-gray-500">{date}</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start">
                   <MapPin className="h-5 w-5 text-gray-400 mr-2 mt-0.5" />
                   <div>
                     <p className="text-sm text-gray-500">Arrival</p>
-                    <p className="font-medium text-gray-900">{schedule.arrivalTime}</p>
+                    <p className="font-medium text-gray-900">
+                      {new Date(schedule.arrivalTime).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </p>
                     <p className="text-sm text-gray-500">{date}</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start">
                   <Users className="h-5 w-5 text-gray-400 mr-2 mt-0.5" />
                   <div>
@@ -81,14 +98,16 @@ const ScheduleList: React.FC<ScheduleListProps> = ({ schedules, date }) => {
                 </div>
               </div>
             </div>
-            
+
             <div className="mt-4 md:mt-0 md:ml-6 flex flex-col items-center">
               <p className="text-2xl font-bold text-primary mb-2">
-                KSh {schedule.price}
+                KSh {schedule.price.toLocaleString()}
               </p>
               <button
                 onClick={() => handleScheduleSelect(schedule)}
-                className="btn-primary w-full flex items-center justify-center"
+                className={`btn-primary w-full flex items-center justify-center ${
+                  schedule.availableSeats === 0 ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
                 disabled={schedule.availableSeats === 0}
               >
                 {schedule.availableSeats === 0 ? 'Sold Out' : 'Select Seats'}

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Filter, ArrowDownUp } from 'lucide-react';
 
 interface ScheduleFiltersProps {
-  onFilterChange: (filters: { 
+  onFilterChange: (filters: {
     vehicleTypes: string[];
     timeOfDay: string[];
     minPrice: number;
@@ -17,50 +17,42 @@ const ScheduleFilters: React.FC<ScheduleFiltersProps> = ({ onFilterChange, onSor
   const [timeOfDay, setTimeOfDay] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 3000]);
   const [sortBy, setSortBy] = useState('departureTime');
-  
+
   const toggleFilter = () => {
     setIsOpen(!isOpen);
   };
-  
+
   const handleVehicleTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const isChecked = e.target.checked;
-    
-    if (isChecked) {
-      setVehicleTypes([...vehicleTypes, value]);
-    } else {
-      setVehicleTypes(vehicleTypes.filter((type) => type !== value));
-    }
+    const { value, checked } = e.target;
+    setVehicleTypes((prev) =>
+      checked ? [...prev, value] : prev.filter((type) => type !== value)
+    );
   };
-  
+
   const handleTimeOfDayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const isChecked = e.target.checked;
-    
-    if (isChecked) {
-      setTimeOfDay([...timeOfDay, value]);
-    } else {
-      setTimeOfDay(timeOfDay.filter((time) => time !== value));
-    }
+    const { value, checked } = e.target;
+    setTimeOfDay((prev) =>
+      checked ? [...prev, value] : prev.filter((time) => time !== value)
+    );
   };
-  
+
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
     const name = e.target.name;
-    
+
     if (name === 'minPrice') {
-      setPriceRange([value, priceRange[1]]);
+      setPriceRange([Math.min(value, priceRange[1]), priceRange[1]]);
     } else {
-      setPriceRange([priceRange[0], value]);
+      setPriceRange([priceRange[0], Math.max(value, priceRange[0])]);
     }
   };
-  
+
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     setSortBy(value);
     onSortChange(value);
   };
-  
+
   const applyFilters = () => {
     onFilterChange({
       vehicleTypes,
@@ -68,18 +60,14 @@ const ScheduleFilters: React.FC<ScheduleFiltersProps> = ({ onFilterChange, onSor
       minPrice: priceRange[0],
       maxPrice: priceRange[1],
     });
-    
-    // Close filter on mobile
-    if (window.innerWidth < 768) {
-      setIsOpen(false);
-    }
+
+    if (window.innerWidth < 768) setIsOpen(false);
   };
-  
+
   const resetFilters = () => {
     setVehicleTypes([]);
     setTimeOfDay([]);
     setPriceRange([0, 3000]);
-    
     onFilterChange({
       vehicleTypes: [],
       timeOfDay: [],
@@ -87,7 +75,11 @@ const ScheduleFilters: React.FC<ScheduleFiltersProps> = ({ onFilterChange, onSor
       maxPrice: 3000,
     });
   };
-  
+
+  useEffect(() => {
+    onSortChange(sortBy);
+  }, []);
+
   return (
     <div className="mb-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
@@ -96,16 +88,18 @@ const ScheduleFilters: React.FC<ScheduleFiltersProps> = ({ onFilterChange, onSor
             onClick={toggleFilter}
             className="flex items-center text-gray-700 font-medium md:hidden"
           >
-            <Filter className="h-5 w-5 mr-2" />
+            <Filter className={`h-5 w-5 mr-2 ${isOpen ? 'text-blue-600' : 'text-gray-700'}`} />
             Filters
           </button>
           <h2 className="text-xl font-semibold text-gray-900 hidden md:block">Filters</h2>
         </div>
-        
+
         <div className="flex items-center mt-4 md:mt-0 w-full md:w-auto">
           <div className="flex items-center">
             <ArrowDownUp className="h-5 w-5 text-gray-500 mr-2" />
+            <label htmlFor="sortSelect" className="sr-only">Sort by</label>
             <select
+              id="sortSelect"
               value={sortBy}
               onChange={handleSortChange}
               className="select py-1 border-none focus:ring-0"
@@ -118,7 +112,7 @@ const ScheduleFilters: React.FC<ScheduleFiltersProps> = ({ onFilterChange, onSor
           </div>
         </div>
       </div>
-      
+
       <div className={`md:block ${isOpen ? 'block' : 'hidden'}`}>
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -126,76 +120,44 @@ const ScheduleFilters: React.FC<ScheduleFiltersProps> = ({ onFilterChange, onSor
             <div>
               <h3 className="font-medium text-gray-800 mb-3">Vehicle Type</h3>
               <div className="space-y-2">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    value="Bus"
-                    checked={vehicleTypes.includes('Bus')}
-                    onChange={handleVehicleTypeChange}
-                    className="h-4 w-4 text-primary focus:ring-primary/50 rounded"
-                  />
-                  <span className="ml-2 text-gray-700">Bus</span>
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    value="Matatu"
-                    checked={vehicleTypes.includes('Matatu')}
-                    onChange={handleVehicleTypeChange}
-                    className="h-4 w-4 text-primary focus:ring-primary/50 rounded"
-                  />
-                  <span className="ml-2 text-gray-700">Matatu</span>
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    value="Shuttle"
-                    checked={vehicleTypes.includes('Shuttle')}
-                    onChange={handleVehicleTypeChange}
-                    className="h-4 w-4 text-primary focus:ring-primary/50 rounded"
-                  />
-                  <span className="ml-2 text-gray-700">Shuttle</span>
-                </label>
+                {['Bus', 'Matatu', 'Shuttle'].map((type) => (
+                  <label key={type} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      value={type}
+                      checked={vehicleTypes.includes(type)}
+                      onChange={handleVehicleTypeChange}
+                      className="h-4 w-4 text-primary focus:ring-primary/50 rounded"
+                    />
+                    <span className="ml-2 text-gray-700">{type}</span>
+                  </label>
+                ))}
               </div>
             </div>
-            
+
             {/* Time of Day */}
             <div>
               <h3 className="font-medium text-gray-800 mb-3">Time of Day</h3>
               <div className="space-y-2">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    value="morning"
-                    checked={timeOfDay.includes('morning')}
-                    onChange={handleTimeOfDayChange}
-                    className="h-4 w-4 text-primary focus:ring-primary/50 rounded"
-                  />
-                  <span className="ml-2 text-gray-700">Morning (6AM - 12PM)</span>
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    value="afternoon"
-                    checked={timeOfDay.includes('afternoon')}
-                    onChange={handleTimeOfDayChange}
-                    className="h-4 w-4 text-primary focus:ring-primary/50 rounded"
-                  />
-                  <span className="ml-2 text-gray-700">Afternoon (12PM - 6PM)</span>
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    value="evening"
-                    checked={timeOfDay.includes('evening')}
-                    onChange={handleTimeOfDayChange}
-                    className="h-4 w-4 text-primary focus:ring-primary/50 rounded"
-                  />
-                  <span className="ml-2 text-gray-700">Evening (6PM - 12AM)</span>
-                </label>
+                {[
+                  { label: 'Morning (6AM - 12PM)', value: 'morning' },
+                  { label: 'Afternoon (12PM - 6PM)', value: 'afternoon' },
+                  { label: 'Evening (6PM - 12AM)', value: 'evening' },
+                ].map(({ label, value }) => (
+                  <label key={value} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      value={value}
+                      checked={timeOfDay.includes(value)}
+                      onChange={handleTimeOfDayChange}
+                      className="h-4 w-4 text-primary focus:ring-primary/50 rounded"
+                    />
+                    <span className="ml-2 text-gray-700">{label}</span>
+                  </label>
+                ))}
               </div>
             </div>
-            
+
             {/* Price Range */}
             <div>
               <h3 className="font-medium text-gray-800 mb-3">Price Range</h3>
@@ -231,7 +193,7 @@ const ScheduleFilters: React.FC<ScheduleFiltersProps> = ({ onFilterChange, onSor
               </div>
             </div>
           </div>
-          
+
           <div className="flex justify-end mt-6 pt-4 border-t border-gray-100">
             <button
               type="button"

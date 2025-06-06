@@ -3,187 +3,168 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 import ScheduleList from '../components/schedules/ScheduleList';
 import ScheduleFilters from '../components/schedules/ScheduleFilters';
-import { schedules, routes } from '../data/mockData';
-import { Schedule, Route } from '../types';
+import { ScheduleWithVehicleAndRoute } from '../types';
 import { useBooking } from '../context/BookingContext';
 import { ArrowLeft, Calendar } from 'lucide-react';
+import axios from 'axios';
+import { format } from 'date-fns';
 
 const SchedulesPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { setSelectedRoute } = useBooking();
-  
+
   const queryParams = new URLSearchParams(location.search);
-  const fromParam = queryParams.get('from');
-  const toParam = queryParams.get('to');
-  const dateParam = queryParams.get('date') || new Date().toISOString().split('T')[0];
-  
-  const [filteredSchedules, setFilteredSchedules] = useState<Schedule[]>([]);
+  const defaultRouteId = '6837cf7b09662f21e217d98c';
+  const defaultDate = '2025-05-31';
+
+  const routeIdParam = queryParams.get('route') || defaultRouteId;
+  const dateParam = queryParams.get('date') || defaultDate;
+
+  const [filteredSchedules, setFilteredSchedules] = useState<ScheduleWithVehicleAndRoute[]>([]);
+  const [allSchedules, setAllSchedules] = useState<ScheduleWithVehicleAndRoute[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentRoute, setCurrentRoute] = useState<Route | null>(null);
-  const [date, setDate] = useState(dateParam);
-  
-  // Filter for schedules based on route
+  const [date, setDate] = useState<string>(dateParam);
+
   useEffect(() => {
-    setLoading(true);
-    
-    // Find the current route
-    const route = routes.find(
-      (r) => r.from === fromParam && r.to === toParam
-    );
-    
-    if (route) {
-      setCurrentRoute(route);
-      setSelectedRoute(route);
-      
-      // Filter schedules based on route
-      const filtered = schedules.filter((schedule) => schedule.routeId === route.id);
-      setFilteredSchedules(filtered);
-    } else {
-      setFilteredSchedules([]);
-    }
-    
-    setLoading(false);
-  }, [fromParam, toParam, setSelectedRoute]);
-  
+    const fetchSchedules = async () => {
+      if (!routeIdParam || !date) return;
+
+      setLoading(true);
+      try {
+        const formattedDate = format(new Date(date), 'yyyy-MM-dd');
+        const response = await axios.get('http://localhost:4000/api/getSchedulesByRoute', {
+          params: { routeId: routeIdParam, date: formattedDate },
+        });
+
+        const schedules: ScheduleWithVehicleAndRoute[] = response.data.map((s: any) => ({
+          schedule: {
+            ...s.schedule,
+            id: s.schedule._id,
+          },
+          vehicle: {
+            ...s.vehicle,
+            id: s.vehicle._id,
+          },
+          route: {
+            ...s.route,
+            id: s.route._id,
+          },
+        }));
+
+        setAllSchedules(schedules);
+        setFilteredSchedules(schedules);
+      } catch (error) {
+        console.error('Error fetching schedules:', error);
+        setAllSchedules([]);
+        setFilteredSchedules([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSchedules();
+  }, [routeIdParam, date, setSelectedRoute]);
+
   const handleFilterChange = (filters: {
     vehicleTypes: string[];
     timeOfDay: string[];
     minPrice: number;
     maxPrice: number;
   }) => {
-    if (!currentRoute) return;
-    
-    // Filter schedules based on route and filters
-    let filtered = schedules.filter((schedule) => schedule.routeId === currentRoute.id);
-    
-    // Apply vehicle type filter
+    let filtered = [...allSchedules];
+
     if (filters.vehicleTypes.length > 0) {
-      filtered = filtered.filter((schedule) =>
-        filters.vehicleTypes.includes(schedule.vehicleType)
+      filtered = filtered.filter((item) =>
+        filters.vehicleTypes.includes(item.vehicle.model)
       );
     }
-    
-    // Apply time of day filter
+
     if (filters.timeOfDay.length > 0) {
-      filtered = filtered.filter((schedule) => {
-        const hour = parseInt(schedule.departureTime.split(':')[0]);
-        
-        if (filters.timeOfDay.includes('morning') && hour >= 6 && hour < 12) {
-          return true;
-        }
-        
-        if (filters.timeOfDay.includes('afternoon') && hour >= 12 && hour < 18) {
-          return true;
-        }
-        
-        if (filters.timeOfDay.includes('evening') && hour >= 18) {
-          return true;
-        }
-        
-        return false;
+      filtered = filtered.filter((item) => {
+        const hour = new Date(item.schedule.departureTime).getHours();
+        return (
+          (filters.timeOfDay.includes('morning') && hour >= 6 && hour < 12) ||
+          (filters.timeOfDay.includes('afternoon') && hour >= 12 && hour < 18) ||
+          (filters.timeOfDay.includes('evening') && hour >= 18)
+        );
       });
     }
-    
-    // Apply price filter
+
     filtered = filtered.filter(
-      (schedule) => schedule.price >= filters.minPrice && schedule.price <= filters.maxPrice
+      (item) =>
+        item.schedule.price >= filters.minPrice &&
+        item.schedule.price <= filters.maxPrice
     );
-    
+
     setFilteredSchedules(filtered);
   };
-  
+
   const handleSortChange = (sortBy: string) => {
     const sorted = [...filteredSchedules];
-    
+
     switch (sortBy) {
       case 'departureTime':
-        sorted.sort((a, b) => {
-          const timeA = a.departureTime.split(':').map(Number);
-          const timeB = b.departureTime.split(':').map(Number);
-          return timeA[0] * 60 + timeA[1] - (timeB[0] * 60 + timeB[1]);
-        });
+        sorted.sort(
+          (a, b) =>
+            new Date(a.schedule.departureTime).getTime() -
+            new Date(b.schedule.departureTime).getTime()
+        );
         break;
-      case 'price':
-        sorted.sort((a, b) => a.price - b.price);
+      case 'priceLowToHigh':
+        sorted.sort((a, b) => a.schedule.price - b.schedule.price);
         break;
-      case 'duration':
-        // This would require calculating duration, using arrival/departure difference
-        // As a simplification, we'll sort by route distance instead
-        sorted.sort((a, b) => {
-          const routeA = routes.find(r => r.id === a.routeId);
-          const routeB = routes.find(r => r.id === b.routeId);
-          if (!routeA || !routeB) return 0;
-          return parseInt(routeA.distance) - parseInt(routeB.distance);
-        });
-        break;
-      case 'availableSeats':
-        sorted.sort((a, b) => b.availableSeats - a.availableSeats);
+      case 'priceHighToLow':
+        sorted.sort((a, b) => b.schedule.price - a.schedule.price);
         break;
       default:
         break;
     }
-    
+
     setFilteredSchedules(sorted);
   };
-  
+
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newDate = e.target.value;
-    setDate(newDate);
-    
-    // Update URL with new date
-    queryParams.set('date', newDate);
-    navigate(`${location.pathname}?${queryParams.toString()}`);
+    setDate(e.target.value);
   };
-  
+
   return (
     <Layout>
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-6">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center text-gray-600 hover:text-primary mb-4"
-          >
-            <ArrowLeft className="h-4 w-4 mr-1" />
-            Back
-          </button>
-          
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-            {fromParam} to {toParam}
-          </h1>
-          
-          <div className="flex items-center">
-            <Calendar className="h-5 w-5 text-gray-500 mr-2" />
-            <input
-              type="date"
-              value={date}
-              onChange={handleDateChange}
-              className="border-none focus:ring-0 text-gray-700 font-medium p-0"
-              min={new Date().toISOString().split('T')[0]}
-            />
-          </div>
+      <div className="container mx-auto px-4 py-6">
+        <button
+          onClick={() => navigate(-1)}
+          className="mb-4 flex items-center text-primary hover:underline"
+        >
+          <ArrowLeft className="mr-2 h-5 w-5" /> Back
+        </button>
+
+        <h1 className="text-3xl font-semibold mb-6">Available Schedules</h1>
+
+        <div className="mb-6 flex items-center space-x-4">
+          <label htmlFor="schedule-date" className="flex items-center space-x-2">
+            <Calendar className="h-5 w-5 text-gray-500" />
+            <span>Date:</span>
+          </label>
+          <input
+            type="date"
+            id="schedule-date"
+            value={date}
+            onChange={handleDateChange}
+            className="border rounded px-3 py-1"
+          />
         </div>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          <div className="lg:col-span-1">
-            <div className="sticky top-4">
-              <ScheduleFilters
-                onFilterChange={handleFilterChange}
-                onSortChange={handleSortChange}
-              />
-            </div>
-          </div>
-          
-          <div className="lg:col-span-3">
-            {loading ? (
-              <div className="text-center py-12">
-                <p>Loading schedules...</p>
-              </div>
-            ) : (
-              <ScheduleList schedules={filteredSchedules} date={date} />
-            )}
-          </div>
-        </div>
+
+        <ScheduleFilters
+          schedules={allSchedules}
+          onFilterChange={handleFilterChange}
+          onSortChange={handleSortChange}
+        />
+
+        {loading ? (
+          <div className="text-center py-12">Loading schedules...</div>
+        ) : (
+          <ScheduleList schedules={filteredSchedules} date={date} />
+        )}
       </div>
     </Layout>
   );

@@ -12,6 +12,7 @@ interface TransportRoute {
   imageUrl?: string;
   distance?: string;
   duration?: string;
+  price?: number;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -82,6 +83,7 @@ const AdminRoutes = () => {
                   <strong>To:</strong> {route.destination}<br />
                   <strong>Distance:</strong> {route.distance || 'N/A'}<br />
                   <strong>Duration:</strong> {route.duration || 'N/A'}<br />
+                  <strong>Price:</strong> {route.price || 'N/A'}<br />
                   {route.description && (
                     <>
                       <strong>Description:</strong> {route.description}<br />

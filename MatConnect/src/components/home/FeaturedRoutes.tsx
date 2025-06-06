@@ -2,18 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 
-// Define Route type consistent with your backend data
 interface Route {
-  id: string;
-  from: string;
-  to: string;
+  _id: string;
+  routeNumber: string;
+  origin: string;
+  destination: string;
   distance?: string;
   duration?: string;
-  price?: string;       // Optional, if backend provides
-  image?: string;       // Optional, if backend provides
+  price: number;
+  imageUrl: string;
 }
 
-const API_BASE = 'http://localhost:4000/api';  // Change to your backend URL
+const API_BASE = 'http://localhost:4000/api';
 
 const FeaturedRoutes: React.FC = () => {
   const [routes, setRoutes] = useState<Route[]>([]);
@@ -27,14 +27,8 @@ const FeaturedRoutes: React.FC = () => {
         if (!res.ok) throw new Error(`Error: ${res.status} ${res.statusText}`);
         const data: Route[] = await res.json();
 
-        // Optional: Add default images or prices if missing
-        const enrichedData = data.map(route => ({
-          ...route,
-          image: route.image || '/default-route.jpg',
-          price: route.price || 'KES 1500',
-        }));
-
-        setRoutes(enrichedData);
+        console.log('Fetched routes:', data); // debug
+        setRoutes(data);
       } catch (err: any) {
         setError(err.message || 'Failed to fetch routes');
       } finally {
@@ -44,6 +38,8 @@ const FeaturedRoutes: React.FC = () => {
 
     fetchRoutes();
   }, []);
+  // console.log(route.imageUrl);
+
 
   if (loading) return <p className="text-center py-10">Loading routes...</p>;
   if (error) return <p className="text-center py-10 text-red-600">{error}</p>;
@@ -61,28 +57,32 @@ const FeaturedRoutes: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {routes.map((route) => (
             <div
-              key={route.id}
+              key={route._id}
               className="card group overflow-hidden transition-all duration-300 hover:shadow-lg"
             >
               <div className="relative h-48 overflow-hidden">
                 <img
-                  src={route.image}
-                  alt={`${route.from} to ${route.to}`}
+                  src={`http://localhost:4000/api/getDailyRoutes${route.imageUrl}`}
+                  alt={`${route.origin} to ${route.destination}`}
+                  // className="w-full h-full object-cover"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                 <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                  <p className="text-sm font-medium">{route.price}</p>
+                  <p className="text-sm font-medium">Ksh {route.price.toLocaleString()}</p>
                 </div>
               </div>
               <div className="p-5">
                 <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                  {route.from} to {route.to}
+                  {route.origin} to {route.destination}
                 </h3>
+                <p className="text-sm text-gray-600">
+                  {route.distance} • {route.duration}
+                </p>
                 <div className="flex items-center justify-between mt-4">
                   <span className="text-sm text-gray-500">Daily departures</span>
                   <Link
-                    to={`/schedules?from=${route.from}&to=${route.to}`}
+                    to={`/schedules?from=${encodeURIComponent(route.origin)}&to=${encodeURIComponent(route.destination)}`}
                     className="text-primary hover:text-primary/80 font-medium text-sm flex items-center"
                   >
                     View Schedules
